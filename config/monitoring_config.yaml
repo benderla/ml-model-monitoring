@@ -1,0 +1,16 @@
+drift_detection:
+
+  statistical_test: ks_test
+
+  threshold: 0.05
+
+features_monitored:
+
+  - feature1
+  - feature2
+  - bytes_transferred
+
+alerts:
+
+  drift_detected: true
+  anomaly_rate_threshold: 0.10

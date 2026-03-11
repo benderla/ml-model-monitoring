@@ -100,3 +100,13 @@ Real systems would require:
 • automated monitoring pipelines
 • integrated alerting infrastructure
 
+## Monitoring Configuration
+
+Monitoring thresholds and rules are defined in `config/monitoring_config.yaml`.
+
+Example configuration:
+
+- drift detection using Kolmogorov–Smirnov statistical test
+- drift threshold set to p-value < 0.05
+- monitoring key network traffic features
+
