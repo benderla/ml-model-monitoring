@@ -6,4 +6,5 @@ def detect_feature_drift(train_feature, prod_feature):
 
     stat, p_value = ks_2samp(train_feature, prod_feature)
 
-    return p_valueO
+    return p_value
+
