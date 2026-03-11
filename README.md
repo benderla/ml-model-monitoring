@@ -84,6 +84,12 @@ When monitoring alerts trigger:
 3. Evaluate model performance on labeled validation samples.
 4. Decide whether retraining is required.
 
+## Monitoring Dashboard
+
+Example monitoring signals tracked in production.
+
+![Monitoring Dashboard](metrics/monitoring_dashboard.png)
+
 ## Limitations
 
 This repository demonstrates monitoring concepts using a simplified dataset.
