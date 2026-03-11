@@ -1,3 +1,16 @@
+# ML Model Monitoring
+
+This project demonstrates how machine learning models can be monitored in production environments.
+
+The repository illustrates common monitoring strategies used by ML platform teams, including:
+
+• data drift detection  
+• model performance monitoring  
+• alerting strategies  
+• investigation workflows  
+
+The example implementation uses statistical drift detection to compare training data with production data.
+
 ## Why ML Monitoring Matters
 
 Machine learning models often degrade in production due to:
@@ -27,13 +40,30 @@ The system tracks three categories of signals:
 • prediction confidence
 
 ## Sample Code
+
+```python
 from scipy.stats import ks_2samp
 
 def detect_feature_drift(train_feature, prod_feature):
     stat, p_value = ks_2samp(train_feature, prod_feature)
     return p_value
+```markdown
 
 The Kolmogorov–Smirnov test compares two distributions and detects statistically significant drift.
+
+## Monitoring Architecture
+
+training data
+      ↓
+production data
+      ↓
+drift detection
+      ↓
+alerting system
+      ↓
+investigation
+      ↓
+model retraining
 
 ## Alerting Strategy
 
@@ -63,3 +93,4 @@ Real systems would require:
 • larger production datasets
 • automated monitoring pipelines
 • integrated alerting infrastructure
+
