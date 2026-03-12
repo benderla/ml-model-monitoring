@@ -11,6 +11,16 @@ The repository illustrates common monitoring strategies used by ML platform team
 
 The example implementation uses statistical drift detection to compare training data with production data.
 
+## Project Context
+
+This repository demonstrates how machine learning models can be monitored once deployed in production environments.
+
+It complements the anomaly detection model developed in the `network-attack-detection` repository and the deployment architecture defined in the `ml-anomaly-detection-system-launch` project.
+
+Together these repositories illustrate the full machine learning lifecycle:
+
+Model Development → Deployment Architecture → Production Monitoring
+
 ## Why ML Monitoring Matters
 
 Machine learning models often degrade in production due to:
