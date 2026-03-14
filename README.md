@@ -21,6 +21,22 @@ Together these repositories illustrate the full machine learning lifecycle:
 
 Model Development → Deployment Architecture → Production Monitoring
 
+## System Architecture
+
+The monitoring workflow simulates how machine learning models are monitored in production environments.
+
+Model predictions
+        ↓
+Prediction logging
+        ↓
+Metric calculation (accuracy, drift indicators)
+        ↓
+Distribution monitoring
+        ↓
+Drift detection alerts
+        ↓
+Model retraining trigger
+
 ## Why ML Monitoring Matters
 
 Machine learning models often degrade in production due to:
