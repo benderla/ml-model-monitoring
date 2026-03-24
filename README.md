@@ -117,9 +117,9 @@ When monitoring alerts trigger:
 
 ## Monitoring Dashboard
 
-Example monitoring signals tracked in production.
+Example production monitoring for the anomaly detection system.
 
-![Monitoring Dashboard](metrics/monitoring_dashboard.png)
+![Monitoring Dashboard](docs/monitoring-dashboard.png)
 
 ## Limitations
 
