@@ -1,151 +1,171 @@
 # ML Model Monitoring
 
-This project demonstrates how machine learning models can be monitored in production environments.
+This project defines how machine learning models are monitored after deployment, including drift detection, performance degradation, and operational response.
 
-The repository illustrates common monitoring strategies used by ML platform teams, including:
+This project focuses on operational ownership of ML systems after deployment, not just model performance.
 
-• data drift detection  
-• model performance monitoring  
-• alerting strategies  
-• investigation workflows  
+---
 
-The example implementation uses statistical drift detection to compare training data with production data.
+## What This Covers
 
-## Project Context
+- data drift detection
+- model performance monitoring
+- alerting thresholds
+- incident response workflow
 
-This repository demonstrates how machine learning models can be monitored once deployed in production environments.
+---
 
-It complements the anomaly detection model developed in the `network-attack-detection` repository and the deployment architecture defined in the `ml-anomaly-detection-system-launch` project.
+## Monitoring Framework
 
-Together these repositories illustrate the full machine learning lifecycle:
+### 1. Data Monitoring
 
-Model Development → Deployment Architecture → Production Monitoring
+Track:
+- feature distributions
+- missing values
+- input ranges
 
-## Architecture
+Goal:
+- detect shifts in incoming data vs training data
 
-### System Architecture
+---
 
-The monitoring workflow simulates how machine learning models are monitored in production environments.
+## How Monitoring Decisions Are Made
 
-Model predictions
-        ↓
-Prediction logging
-        ↓
-Metric calculation (accuracy, drift indicators)
-        ↓
-Distribution monitoring
-        ↓
-Drift detection alerts
-        ↓
-Model retraining trigger
+Monitoring thresholds are not fixed and depend on system tolerance.
 
-### ML Platform
-![ML Platform](docs/ml-platform-architecture.png)
+Examples:
+- high-risk systems → prioritize recall (detect more issues)
+- cost-sensitive systems → prioritize precision (reduce false alerts)
 
-## Why ML Monitoring Matters
+Tradeoffs:
+- lower thresholds → more alerts, higher detection
+- higher thresholds → fewer alerts, higher risk of missed issues
 
-Machine learning models often degrade in production due to:
+Final thresholds should be set based on:
+- business impact
+- acceptable false positive rate
+- response capability of the team
 
-• changes in incoming data distributions  
-• evolving user behavior  
-• upstream pipeline changes  
-• model concept drift
+---
 
-Without monitoring, models can silently fail while still producing predictions.
+### 2. Model Performance Monitoring
 
-This project demonstrates how production ML systems detect and respond to these issues.
+Track:
+- precision / recall (if labels available)
+- proxy metrics (if labels delayed)
+- prediction distributions
 
-## Monitoring Signals
+Goal:
+- detect degradation in model behavior
 
-The system tracks three categories of signals:
+---
 
-### Data Quality
-• missing values
-• feature distribution changes
+### 3. Drift Detection
 
-### Data Drift
-• statistical divergence between training and production data
+Types:
+- data drift
+- concept drift
 
-### Model Performance
-• anomaly rate trends
-• prediction confidence
+Approach:
+- statistical comparison of distributions
+- threshold-based alerts
 
-## Sample Code
+---
 
-```python
-from scipy.stats import ks_2samp
+### 4. Alerting
 
-def detect_feature_drift(train_feature, prod_feature):
-    stat, p_value = ks_2samp(train_feature, prod_feature)
-    return p_value
+Trigger alerts when:
+- feature distributions shift beyond threshold
+- prediction distribution changes significantly
+- performance drops below acceptable range
 
-# Example usage
-p_value = detect_feature_drift(training_data, production_data)
+---
 
-if p_value < 0.05:
-    print("Feature drift detected")
-else:
-    print("No significant drift detected")
-```
+## Incident Response
 
-The Kolmogorov–Smirnov test compares two distributions and detects statistically significant drift.
+When an alert is triggered:
 
-## Monitoring Architecture
+1. Validate the signal
+   - confirm data issue vs noise
+2. Identify scope
+   - which features or predictions are affected
+3. Assess impact
+   - user-facing impact vs internal issue
+4. Take action
+   - retrain model
+   - adjust thresholds
+   - rollback to previous model
+5. Monitor recovery
+   - ensure metrics return to baseline
 
-training data
-      ↓
-production data
-      ↓
-drift detection
-      ↓
-alerting system
-      ↓
-investigation
-      ↓
-model retraining
+Goal:
+- reduce time from detection to resolution
 
-## Alerting Strategy
+---
 
-Alerts are triggered when:
+## Handling Delayed Labels
 
-• p-value < 0.05 for any monitored feature  
-• anomaly rate changes by more than 5%  
-• prediction latency exceeds threshold
+In many systems, ground truth labels are not immediately available.
 
-These alerts signal that the model may require retraining or investigation.
+Approach:
+- monitor proxy metrics (prediction distributions, input drift)
+- use delayed evaluation once labels arrive
+- compare short-term vs long-term performance
 
-## Investigation Workflow
+Impact:
+- monitoring must rely on indirect signals initially
+- full performance validation happens later
 
-When monitoring alerts trigger:
+---
 
-1. Confirm the alert is not caused by upstream pipeline changes.
-2. Compare feature distributions against training data.
-3. Evaluate model performance on labeled validation samples.
-4. Decide whether retraining is required.
+## Example Monitoring Pipeline
 
-## Monitoring Dashboard
+1. collect incoming prediction data  
+2. log features and predictions  
+3. compare against baseline distributions  
+4. compute monitoring metrics  
+5. trigger alerts if thresholds exceeded  
+6. log incidents and initiate response  
 
-Example production monitoring for the anomaly detection system.
+Goal:
+- continuous visibility into model behavior after deployment 
 
-![Monitoring Dashboard](docs/monitoring-dashboard.png)
+---
 
-## Limitations
+## What This Does NOT Include
 
-This repository demonstrates monitoring concepts using a simplified dataset.
+- full production monitoring system
+- real-time streaming pipeline
+- automated retraining pipeline
 
-Real systems would require:
+---
 
-• larger production datasets
-• automated monitoring pipelines
-• integrated alerting infrastructure
+## Interview Questions This Project Supports
 
-## Monitoring Configuration
+- How do you monitor a model after deployment?
+- What is data drift vs concept drift?
+- What metrics would you track?
+- How do you handle delayed labels?
+- What happens when the model degrades?
 
-Monitoring thresholds and rules are defined in `config/monitoring_config.yaml`.
+---
 
-Example configuration:
+## Example: Drift Detection Implementation
 
-- drift detection using Kolmogorov–Smirnov statistical test
-- drift threshold set to p-value < 0.05
-- monitoring key network traffic features
+A simple example is included in:
 
+- `src/drift_check.py`
+
+This script:
+- compares baseline vs current data
+- calculates mean difference
+- triggers an alert when threshold is exceeded
+
+Example output:
+- "ALERT: Potential data drift detected"
+
+This demonstrates how monitoring logic can be implemented before integrating into a larger system.
+
+---
+
+This project demonstrates how monitoring enables reliable ML systems by connecting model behavior to operational decisions.
