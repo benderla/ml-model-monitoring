@@ -148,3 +148,32 @@ pip install -r requirements.txt
 ## Key Takeaway
 
 This project demonstrates how to move beyond model deployment and implement monitoring that detects when models begin to fail in production environments.
+
+---
+
+## Monitoring Workflow
+
+Baseline → New Data → Drift Detection → Alert → Investigation → Retraining
+
+---
+
+## What Happens After Drift Detection
+
+* Drift event is logged
+* System triggers alert for investigation
+* Root cause analysis performed (data vs model issue)
+* Model retrained or threshold adjusted
+* Updated model redeployed
+
+---
+
+## Example Monitoring Lifecycle
+
+1. Model deployed
+2. Predictions collected daily
+3. Drift check runs automatically
+4. Drift detected via KS test
+5. Alert generated
+6. Model reviewed and updated
+
+This mirrors real-world ML operations where monitoring feeds directly into model lifecycle management.
