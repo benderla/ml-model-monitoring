@@ -1,171 +1,112 @@
-# ML Model Monitoring
+# ML Model Monitoring — Drift & Performance Tracking System
 
-This project defines how machine learning models are monitored after deployment, including drift detection, performance degradation, and operational response.
+This project implements a lightweight monitoring system for machine learning models to detect data drift, prediction shifts, and performance degradation over time.
 
-This project focuses on operational ownership of ML systems after deployment, not just model performance.
-
----
-
-## What This Covers
-
-- data drift detection
-- model performance monitoring
-- alerting thresholds
-- incident response workflow
+The goal is to demonstrate how to operate ML systems after deployment by identifying when a model’s behavior changes and requires attention.
 
 ---
 
-## Monitoring Framework
+## Why This Matters
 
-### 1. Data Monitoring
+* ML models degrade over time as data distributions shift
+* Performance metrics alone are not enough — underlying data can drift silently
+* Without monitoring, models fail quietly in production
 
-Track:
-- feature distributions
-- missing values
-- input ranges
-
-Goal:
-- detect shifts in incoming data vs training data
+This project shows how to detect those failures early using simple, practical checks.
 
 ---
 
-## How Monitoring Decisions Are Made
+## What This System Does
 
-Monitoring thresholds are not fixed and depend on system tolerance.
-
-Examples:
-- high-risk systems → prioritize recall (detect more issues)
-- cost-sensitive systems → prioritize precision (reduce false alerts)
-
-Tradeoffs:
-- lower thresholds → more alerts, higher detection
-- higher thresholds → fewer alerts, higher risk of missed issues
-
-Final thresholds should be set based on:
-- business impact
-- acceptable false positive rate
-- response capability of the team
+* Compares baseline vs new prediction distributions
+* Detects shifts in model output behavior
+* Calculates key metrics for monitoring model stability
+* Flags potential drift conditions for investigation
 
 ---
 
-### 2. Model Performance Monitoring
+## System Overview
 
-Track:
-- precision / recall (if labels available)
-- proxy metrics (if labels delayed)
-- prediction distributions
-
-Goal:
-- detect degradation in model behavior
+Baseline Predictions
+→ New Predictions
+→ Distribution Comparison
+→ Drift Detection
+→ Alert Signal
 
 ---
 
-### 3. Drift Detection
+## Example Workflow
 
-Types:
-- data drift
-- concept drift
+### Run monitoring check
 
-Approach:
-- statistical comparison of distributions
-- threshold-based alerts
+```bash id="jv09x2"
+python monitor.py --input examples/predictions_v2.csv
+```
 
----
+### Example Output
 
-### 4. Alerting
-
-Trigger alerts when:
-- feature distributions shift beyond threshold
-- prediction distribution changes significantly
-- performance drops below acceptable range
+```text id="c1w9yo"
+Drift Check Results:
+- Mean Prediction Shift: 0.12
+- Std Deviation Shift: 0.08
+- Drift Detected: YES
+```
 
 ---
 
-## Incident Response
+## How It Works
 
-When an alert is triggered:
-
-1. Validate the signal
-   - confirm data issue vs noise
-2. Identify scope
-   - which features or predictions are affected
-3. Assess impact
-   - user-facing impact vs internal issue
-4. Take action
-   - retrain model
-   - adjust thresholds
-   - rollback to previous model
-5. Monitor recovery
-   - ensure metrics return to baseline
-
-Goal:
-- reduce time from detection to resolution
+* Establishes a baseline distribution from historical predictions
+* Compares new prediction data against baseline
+* Measures statistical differences (mean, variance)
+* Applies simple thresholds to determine drift
 
 ---
 
-## Handling Delayed Labels
+## What This Project Demonstrates
 
-In many systems, ground truth labels are not immediately available.
-
-Approach:
-- monitor proxy metrics (prediction distributions, input drift)
-- use delayed evaluation once labels arrive
-- compare short-term vs long-term performance
-
-Impact:
-- monitoring must rely on indirect signals initially
-- full performance validation happens later
+* Practical approach to ML monitoring without heavy infrastructure
+* Detection of model behavior changes post-deployment
+* Foundation for alerting and retraining workflows
 
 ---
 
-## Example Monitoring Pipeline
+## Limitations
 
-1. collect incoming prediction data  
-2. log features and predictions  
-3. compare against baseline distributions  
-4. compute monitoring metrics  
-5. trigger alerts if thresholds exceeded  
-6. log incidents and initiate response  
-
-Goal:
-- continuous visibility into model behavior after deployment 
+* Uses simple statistical checks (not advanced drift methods)
+* No real-time pipeline or alerting system
+* No automated retraining loop
 
 ---
 
-## What This Does NOT Include
+## Drift Scenarios
 
-- full production monitoring system
-- real-time streaming pipeline
-- automated retraining pipeline
+- No Drift: baseline and new data share similar distributions → no alert  
+- Drift Detected: shifted prediction distribution triggers alert  
 
----
-
-## Interview Questions This Project Supports
-
-- How do you monitor a model after deployment?
-- What is data drift vs concept drift?
-- What metrics would you track?
-- How do you handle delayed labels?
-- What happens when the model degrades?
+This demonstrates how the system behaves under both stable and degraded model conditions.
 
 ---
 
-## Example: Drift Detection Implementation
+## Next Steps
 
-A simple example is included in:
-
-- `src/drift_check.py`
-
-This script:
-- compares baseline vs current data
-- calculates mean difference
-- triggers an alert when threshold is exceeded
-
-Example output:
-- "ALERT: Potential data drift detected"
-
-This demonstrates how monitoring logic can be implemented before integrating into a larger system.
+* Add statistical drift tests (e.g., KS test)
+* Integrate with real-time monitoring pipeline
+* Connect to alerting system (logs, notifications)
+* Trigger retraining workflow based on drift signals
 
 ---
 
-This project demonstrates how monitoring enables reliable ML systems by connecting model behavior to operational decisions.
+## Repository Structure
+
+* `monitor.py` → core monitoring logic
+* `examples/` → sample prediction datasets
+* `notebooks/` → analysis and experimentation
+
+---
+
+## Tech Stack
+
+* Python (pandas, numpy)
+
+---
