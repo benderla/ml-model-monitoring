@@ -1,8 +1,8 @@
-# ML Model Monitoring — Drift & Performance Tracking System
+# ML Model Monitoring — Drift Detection System
 
 This project implements a lightweight monitoring system for machine learning models to detect data drift, prediction shifts, and performance degradation over time.
 
-The goal is to demonstrate how to operate ML systems after deployment by identifying when a model’s behavior changes and requires attention.
+It demonstrates how to compare baseline and new model predictions using both heuristic thresholds and statistical tests.
 
 ---
 
@@ -10,9 +10,9 @@ The goal is to demonstrate how to operate ML systems after deployment by identif
 
 * ML models degrade over time as data distributions shift
 * Performance metrics alone are not enough — underlying data can drift silently
-* Without monitoring, models fail quietly in production
+* Without monitoring, models can fail without obvious signals
 
-This project shows how to detect those failures early using simple, practical checks.
+This project shows how to detect those failures using simple, practical techniques.
 
 ---
 
@@ -20,8 +20,9 @@ This project shows how to detect those failures early using simple, practical ch
 
 * Compares baseline vs new prediction distributions
 * Detects shifts in model output behavior
-* Calculates key metrics for monitoring model stability
-* Flags potential drift conditions for investigation
+* Calculates statistical differences (mean, standard deviation)
+* Applies the Kolmogorov-Smirnov (KS) test for distribution comparison
+* Flags drift conditions based on both threshold and statistical signals
 
 ---
 
@@ -39,18 +40,48 @@ Baseline Predictions
 
 ### Run monitoring check
 
-```bash id="jv09x2"
-python monitor.py --input examples/predictions_v2.csv
+```bash
+python monitor.py \
+  --baseline examples/predictions_v1.csv \
+  --input examples/predictions_v2.csv
 ```
 
-### Example Output
+---
 
-```text id="c1w9yo"
+## Drift Detection Example
+
+Example run comparing baseline vs new predictions:
+
+```bash
+python monitor.py \
+  --baseline examples/predictions_v1.csv \
+  --input examples/predictions_v2.csv
+```
+
+Output:
+
+```text
 Drift Check Results:
-- Mean Prediction Shift: 0.12
-- Std Deviation Shift: 0.08
+- Baseline Mean: 0.29
+- New Mean: 0.71
+- Mean Shift: 0.43
+- Std Shift: -0.00
+- KS Statistic: 0.7970
+- KS p-value: 0.000000
+- Mean Drift Detected: YES
+- KS Drift Detected: YES
 - Drift Detected: YES
 ```
+
+---
+
+## Interpretation
+
+* Large mean shift (0.43) indicates a major change in prediction behavior
+* KS test confirms distributions are statistically different (p < 0.05)
+* Combined signals reduce false positives and improve confidence in drift detection
+
+This approach reflects real-world monitoring systems that use both heuristic thresholds and statistical validation.
 
 ---
 
@@ -58,55 +89,62 @@ Drift Check Results:
 
 * Establishes a baseline distribution from historical predictions
 * Compares new prediction data against baseline
-* Measures statistical differences (mean, variance)
-* Applies simple thresholds to determine drift
+* Measures statistical differences (mean and variance)
+* Applies KS test to detect distribution-level changes
+* Flags drift when either threshold or statistical conditions are met
 
 ---
 
 ## What This Project Demonstrates
 
-* Practical approach to ML monitoring without heavy infrastructure
-* Detection of model behavior changes post-deployment
+* Practical ML monitoring without heavy infrastructure
+* Detection of model behavior changes after deployment
+* Use of statistical methods (KS test) for validation
 * Foundation for alerting and retraining workflows
 
 ---
 
 ## Limitations
 
-* Uses simple statistical checks (not advanced drift methods)
-* No real-time pipeline or alerting system
-* No automated retraining loop
-
----
-
-## Drift Scenarios
-
-- No Drift: baseline and new data share similar distributions → no alert  
-- Drift Detected: shifted prediction distribution triggers alert  
-
-This demonstrates how the system behaves under both stable and degraded model conditions.
+* Uses simple statistical checks (not full monitoring pipeline)
+* No real-time or streaming integration
+* No automated alerting or retraining loop
 
 ---
 
 ## Next Steps
 
-* Add statistical drift tests (e.g., KS test)
-* Integrate with real-time monitoring pipeline
-* Connect to alerting system (logs, notifications)
-* Trigger retraining workflow based on drift signals
+* Add time-based monitoring (batch or streaming data)
+* Integrate alerting (logs, notifications)
+* Store historical metrics for trend analysis
+* Trigger automated retraining based on drift signals
 
 ---
 
 ## Repository Structure
 
-* `monitor.py` → core monitoring logic
+* `monitor.py` → core drift detection logic
 * `examples/` → sample prediction datasets
 * `notebooks/` → analysis and experimentation
+* `metrics/` → evaluation outputs (if applicable)
 
 ---
 
 ## Tech Stack
 
 * Python (pandas, numpy)
+* SciPy (KS statistical test)
 
 ---
+
+## Requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Key Takeaway
+
+This project demonstrates how to move beyond model deployment and implement monitoring that detects when models begin to fail in production environments.
